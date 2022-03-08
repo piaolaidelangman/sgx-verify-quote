@@ -79,8 +79,6 @@ map<string,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
     sgx_ql_qv_result_t quote_verification_result = SGX_QL_QV_RESULT_UNSPECIFIED;
     uint32_t collateral_expiration_status = 1;
 
-    sgx_enclave_id_t eid = 0;
-
     vector<uint8_t> report_data(quote.begin() + 367, quote.begin() + 367 + SGX_REPORT_DATA_SIZE);
 
     //call DCAP quote verify library to get supplemental data size
@@ -168,10 +166,6 @@ map<string,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
         //here we only print supplemental data version for demo usage
         //
         printf("\tInfo: Supplemental data version: %d\n", p->version);
-    }
-
-    if (eid) {
-        sgx_destroy_enclave(eid);
     }
 
     return { 
