@@ -41,7 +41,7 @@
 #include "sgx_dcap_quoteverify.h"
 #include <map>
 
-#define DEFAULT_QUOTE   "../QuoteGenerationSample/quote.dat"
+#define DEFAULT_QUOTE   "./quote.dat"
 
 using namespace std;
 
