@@ -69,7 +69,7 @@ vector<uint8_t> readBinaryContent(const string& filePath)
  * @param quote - ECDSA quote buffer
  */
 
-map<bool,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
+map<string,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
 {
     int ret = 0;
     time_t current_time = 0;
@@ -174,7 +174,8 @@ map<bool,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
         sgx_destroy_enclave(eid);
     }
 
-    return{ {ret==0,report_data } };
+    return{ {"quote_verification_result", vector<uint8_t>(ret == 0)},
+            {"user_report_date",report_data } };
 }
 
 void usage()
@@ -219,10 +220,10 @@ int SGX_CDECL main(int argc, char *argv[])
 
     // Unrusted quote verification, ignore error checking
     printf("\nUntrusted quote verification:\n");
-    map<bool,vector<uint8_t>> result = ecdsa_quote_verification(quote);
+    map<vector<uint8_t>, vector<uint8_t>> result = ecdsa_quote_verification(quote);
 
     // Show result
-    if(result.begin()->first == true)
+    if(result.begin()->first[0] == 1)
     {
         printf("Info Verify successed!\n");
     }
