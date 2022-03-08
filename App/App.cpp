@@ -167,7 +167,6 @@ map<bool,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
         //you can check supplemental data based on your own attestation/verification policy
         //here we only print supplemental data version for demo usage
         //
-        printf("\tsize of Supplemental data: %d\n",supplemental_data_size);
         printf("\tInfo: Supplemental data version: %d\n", p->version);
     }
 
