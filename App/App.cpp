@@ -174,8 +174,10 @@ map<string,vector<uint8_t>> ecdsa_quote_verification(vector<uint8_t> quote)
         sgx_destroy_enclave(eid);
     }
 
-    return{ {"quote_verification_result", vector<uint8_t>(ret == 0)},
-            {"user_report_date",report_data } };
+    return { 
+        {"quote_verification_result", vector<uint8_t>{ret == 0}},
+        {"user_report_date", report_data } 
+    };
 }
 
 void usage()
@@ -220,20 +222,21 @@ int SGX_CDECL main(int argc, char *argv[])
 
     // Unrusted quote verification, ignore error checking
     printf("\nUntrusted quote verification:\n");
-    map<vector<uint8_t>, vector<uint8_t>> result = ecdsa_quote_verification(quote);
-
+    map<string, vector<uint8_t>> result = ecdsa_quote_verification(quote);
+    map<string, vector<uint8_t>>::iterator it = result.begin();
     // Show result
-    if(result.begin()->first[0] == 1)
+    if(it->second[0] == 1)
     {
         printf("Info Verify successed!\n");
     }
     else {
         printf("Info Verify failed!\n");
     }
+    it++;
     printf("Info Report data is:\n");
     for(int i=0;i<SGX_REPORT_DATA_SIZE;i++)
     {
-        printf("%d",result.begin()->second[i]);
+        printf("%d",it->second[i]);
     }
     printf("\n");
 
