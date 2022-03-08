@@ -39,8 +39,6 @@ SGX_DEBUG ?= 0
 # Don't support 32bit in this sample
 SGX_COMMON_FLAGS := -m64
 SGX_LIBRARY_PATH := $(SGX_SDK)/lib64
-SGX_ENCLAVE_SIGNER := $(SGX_SDK)/bin/x64/sgx_sign
-SGX_EDGER8R := $(SGX_SDK)/bin/x64/sgx_edger8r
 
 ifeq ($(SGX_DEBUG), 1)
 ifeq ($(SGX_PRERELEASE), 1)
@@ -95,7 +93,6 @@ else
 endif
 
 App_Cpp_Objects := $(App_Cpp_Files:.cpp=.o)
-
 App_Name := app
 
 .PHONY: all target run
@@ -103,16 +100,10 @@ all: .config_$(Build_Mode)_$(SGX_ARCH)
 	@$(MAKE) target
 
 ifeq ($(Build_Mode), HW_RELEASE)
-target:  $(App_Name) $(Enclave_Name)
-	@echo "The project has been built in release hardware mode."
-	@echo "Please sign the $(Enclave_Name) first with your signing key before you run the $(App_Name) to launch and access the enclave."
-	@echo "To sign the enclave use the command:"
-	@echo "   $(SGX_ENCLAVE_SIGNER) sign -key <your key> -enclave $(Enclave_Name) -out <$(Signed_Enclave_Name)> -config $(Enclave_Config_File)"
-	@echo "You can also sign the enclave using an external signing tool."
-	@echo "To build the project in simulation mode set SGX_MODE=SIM. To build the project in prerelease mode set SGX_PRERELEASE=1 and SGX_MODE=HW."
+target:  $(App_Name) 
 
 else
-target: $(App_Name) $(Signed_Enclave_Name)
+target: $(App_Name)
 ifeq ($(Build_Mode), HW_DEBUG)
 	@echo "The project has been built in debug hardware mode."
 else ifeq ($(Build_Mode), SIM_DEBUG)
@@ -134,18 +125,15 @@ ifneq ($(Build_Mode), HW_RELEASE)
 endif
 
 .config_$(Build_Mode)_$(SGX_ARCH):
-	@rm -f .config_* $(App_Name) $(Enclave_Name) $(Signed_Enclave_Name) $(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) Enclave/Enclave_t.*
+	@rm -f .config_* $(App_Name) $(App_Cpp_Objects)
 	@touch .config_$(Build_Mode)_$(SGX_ARCH)
 
 ######## App Objects ########
-
 $(App_Name): $(App_Cpp_Objects)
 	@$(CXX) $^ -o $@ $(App_Link_Flags)
 	@echo "LINK =>  $@"
 
-######## Enclave Objects ########
-
 .PHONY: clean
 
 clean:
-	@rm -f .config_* $(App_Name) $(Enclave_Name) $(Signed_Enclave_Name) $(App_Cpp_Objects) App/*_u.* $(Enclave_Cpp_Objects) Enclave/Enclave_t.*
+	@rm -f .config_* $(App_Name) $(App_Cpp_Objects)
